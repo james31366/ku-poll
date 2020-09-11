@@ -1,3 +1,14 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Datasource local storage ignored files
+/../../../../../:\Year2\ISP\ku-polls-james31366\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+.idea/
 .vscode/
 __pycache__/
 db.sqlite3
+/Project_Default.xml
+.idea/
