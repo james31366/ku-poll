@@ -93,10 +93,10 @@ class QuestionIndexViewTests(TestCase):
         """
         The questions index page may display multiple questions.
         """
-        create_question(question_text="Past questions 1.", days=-30)
-        create_question(question_text="Past questions 2.", days=-5)
+        create_question(question_text="Past question 1.", days=-30)
+        create_question(question_text="Past question 2.", days=-5)
         response = self.client.get(reverse('polls:index'))
-        self.assertQuerysetEqual(response.context['latest_questions_list'],
+        self.assertQuerysetEqual(response.context['latest_question_list'],
                                  ['<Question: Past question 2.>', '<Question: Past question 1.>'])
 
 
@@ -107,7 +107,7 @@ class QuestionDetailViewTests(TestCase):
         The detail view of a question with a pub_date in the future
         returns a 404 not found.
         """
-        future_question = create_question(question_text='Future questions=.', days=5)
+        future_question = create_question(question_text='Future question.', days=5)
         url = reverse('polls:detail', args=(future_question.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
