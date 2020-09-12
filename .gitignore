@@ -97,5 +97,4 @@ ipytho...
 .vscode/
 
 # python environment files
-*.env
-!/mysite/.env
+.env
