@@ -1,9 +1,32 @@
+{% load static %}
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+</style>
+
 <h1>{{ question.question_text }}</h1>
 
 <ul>
-    {% for choice in question.choice_set.all %}
-        <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-    {% endfor %}
+    <table style="width: 15%">
+        <tr>
+            <th>Choice</th>
+            <th>Votes</th>
+        </tr>
+        {% for choice in question.choice_set.all %}
+            <tr>
+                <td><p>{{ choice.choice_text }}</p></td>
+                <td><p>{{ choice.votes }}</p></td>
+            </tr>
+        {% endfor %}
+    </table>
 </ul>
 
-<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+{% if question.can_vote %}
+    <a href="{% url 'polls:detail' question.id %}">vote again?</a>
+{% else %}
+    <label>Can't vote now</label>
+{% endif %}
+<a href="{% url 'polls:index' %}"> Back to poll list</a>
