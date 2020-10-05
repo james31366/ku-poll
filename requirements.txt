@@ -1,0 +1,4 @@
+# Requirements for Travis CI
+coverage
+Django
+django-environ
