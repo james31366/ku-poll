@@ -1,3 +1,8 @@
+"""This script is use to handle the url of the KU Polls web application.
+
+Author: Vichisorn Wejsupakul
+Date: 10/9/2020
+"""
 from django.urls import path
 
 from . import views

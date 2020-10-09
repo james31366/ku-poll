@@ -1,42 +1,63 @@
+"""This script is use to handle view page of the KU Polls web application.
+
+Author: Vichisorn Wejsupakul
+Date: 10/9/2020
+"""
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
-from django.views import generic
 from django.utils import timezone
+from django.views import generic
 
 from .models import Choice, Question
 
 
 class IndexView(generic.ListView):
+    """Class that handle how the question display in the index page of ku poll web application.
+
+    It will display the question that create by admin in a list of question at index page.
+    """
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        """
-        Return all published questions (not including those set to be
-        published in the future).
+        """Return all published questions (not including those set to be published in the future).
+
+        Returns: all published questions.
         """
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')
 
 
 class DetailView(generic.DetailView):
+    """Class that handle how the polls display in detail page."""
     model = Question
     template_name = 'polls/detail.html'
 
     def get_queryset(self):
-        """
-        Excludes any questions that aren't published yet.
+        """Excludes any questions that aren't published yet.
+
+        Returns: the filter for the question that aren't published yet.
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 
 
 class ResultsView(generic.DetailView):
+    """Class that handle how the polls display in result page."""
     model = Question
     template_name = 'polls/results.html'
 
 
-def vote(request, question_id):
+def vote(request, question_id: int):
+    """This function need to handle the vote system and not let the user vote the question that after the end date.
+
+    Args:
+        request: A HttpRequest object, which contains data about the request.
+        question_id: The id of each question that create by the admin.
+
+    Returns: the vote page that let the user vote a polls that come form the detail page.
+
+    """
     question = get_object_or_404(Question, pk=question_id)
     if question.can_vote():
         try:
