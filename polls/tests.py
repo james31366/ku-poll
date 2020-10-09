@@ -62,7 +62,7 @@ class QuestionModelTests(TestCase):
     def test_can_vote_with_after_pub_date(self):
         """can_vote() return True for question whose pub_date was in the past and before end date."""
         pub_time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
-        end_time = pub_time + datetime.timedelta(hours=23, minutes=59, seconds=59)
+        end_time = pub_time + datetime.timedelta(days=2)
         old_question = Question(pub_date=pub_time, end_date=end_time)
         self.assertIs(old_question.can_vote(), True)
 
