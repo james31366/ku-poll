@@ -26,8 +26,9 @@ class Question(models.Model):
         is older than one day it isn't just published but if the
         publish date is in that day it is just published.
 
-        Returns: True = if the question just published
-                 False = the question published
+        Returns:
+            True: if the question just published.
+            False: if the question published.
         """
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
@@ -39,8 +40,9 @@ class Question(models.Model):
         but if the question is that need to release in the future.
         It means that the question is not published yet.
 
-        Returns: True = if the question is already published.
-                 False = if the question is not published.
+        Returns:
+            True: if the question is already published.
+            False: if the question is not published.
 
         """
         now = timezone.now()
@@ -52,8 +54,9 @@ class Question(models.Model):
         If the question is in the vote time or after published date and before end date of that vote.
         the question is can vote. and in the other hand the question is cannot vote.
 
-        Returns: True = if the current time is at publish date and before end date of the question.
-                 False = if the current time is before the publish date and after the end date of the question.
+        Returns:
+            True: if the current time is at publish date and before end date of the question.
+            False: if the current time is before the publish date and after the end date of the question.
 
         """
         now = timezone.now()
