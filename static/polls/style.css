@@ -9,3 +9,9 @@ li {
 body {
     background: white url("images/background2.gif") no-repeat;
 }
+
+.hello-msg {
+    font-size: 18px;
+    color: white;
+    margin-right: 20px;
+}

@@ -3,6 +3,9 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 
+<span class="hello-msg">Hello, {{ request.user }}</span>
+<span><a class="hello-msg" href="{% url 'polls:logout' %}">Logout</a></span>
+
 {% if messages %}
     <ul class="messages">
         {% for msg in messages %}

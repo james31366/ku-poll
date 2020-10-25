@@ -4,13 +4,53 @@ Author: Vichisorn Wejsupakul
 Date: 10/9/2020
 """
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import generic
 
+from .forms import CreateUserForm
 from .models import Choice, Question
+
+
+def login_page(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('polls:index')
+        else:
+            messages.info(request, 'Username or Password is incorrect')
+
+    context = {}
+    return render(request, 'polls/login.html', context)
+
+
+def register_page(request):
+    form = CreateUserForm()
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.cleaned_data.get('username')
+            messages.success(request, "Account was created for " + user)
+
+            return redirect('polls:login')
+
+    context = {'form': form}
+    return render(request, 'polls/registration.html', context)
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('polls:login')
 
 
 class IndexView(generic.ListView):
