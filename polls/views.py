@@ -19,12 +19,13 @@ from .models import Choice, Question, Vote
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-formatter = logging.Formatter('%(asctime)s: %(name)s:%(message)s')
+formatter = logging.Formatter('%(asctime)s: %(name)s: %(message)s')
 
 file_handler = logging.FileHandler('views.log')
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
 
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
@@ -131,7 +132,6 @@ def vote(request, question_id: int):
             select_choice = question.choice_set.get(pk=request.POST['choice'])
         except (KeyError, Choice.DoesNotExist):
             # Redisplay the question voting form
-            logger.exception("{} didn't select a choice.".format(request.user.username))
             return render(request, 'polls/detail.html',
                           {'question': question, 'error_message': "You didn't select a choice.", })
         else:
