@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 {% load static %}
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+      integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 
-<span class="hello-msg">Hello, {{ request.user }}</span>
-<span><a class="hello-msg" href="{% url 'polls:logout' %}">Logout</a></span>
+<h1 id="index_title">KU Polls</h1>
+{% if user.is_authenticated %}
+    <span class="hello-msg">Hello, {{ request.user }}</span>
+    {#    <div></div>#}
+    {#    <div></div><!-- Small modal -->#}
+    <button class="btn btn-primary" data-target=".bs-example-modal-sm" data-toggle="modal">Logout</button>
+
+    <div tabindex="-1" class="modal bs-example-modal-sm" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header"><h4>Logout <i class="fa fa-lock"></i></h4></div>
+                <div class="modal-body"><i class="fa fa-question-circle"></i> Are you sure you want to log-off?
+                </div>
+                <div class="modal-footer"><a class="btn btn-primary btn-block"
+                                             href="{% url 'polls:logout' %}">Logout</a></div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <span>You are not logged in</span>
+    <a class="btn btn-primary" href="{% url 'polls:login' %}">Log In</a>
+{% endif %}
+
 
 {% if messages %}
     <ul class="messages">
@@ -15,19 +41,29 @@
 {% endif %}
 
 {% if latest_question_list %}
-    <ul>
+    <ul class="list-group list-group-flush bg-transparent text-dark">
         {% for question in latest_question_list %}
-            <li>
+            <li class="list-group-item bg-transparent">
                 {{ question.question_text }}
                 {% if question.can_vote %}
-                    <a href="{% url 'polls:detail' question.id %}">vote</a>
+                    <a class="btn btn-primary btn-sm" href="{% url 'polls:detail' question.id %}">vote</a>
                 {% else %}
                     <label>Can't vote now</label>
                 {% endif %}
-                <a href="{% url 'polls:results' question.id %}">Results</a>
+                <a class="btn btn-primary btn-sm" href="{% url 'polls:results' question.id %}">Results</a>
             </li>
         {% endfor %}
     </ul>
 {% else %}
     <p style="color: white">No polls are available.</p>
 {% endif %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>

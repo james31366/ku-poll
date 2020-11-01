@@ -3,6 +3,8 @@
 Author: Vichisorn Wejsupakul
 Date: 10/9/2020
 """
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
@@ -12,10 +14,25 @@ from django.utils import timezone
 from django.views import generic
 
 from .forms import CreateUserForm
-from .models import Choice, Question
+from .models import Choice, Question, Vote
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s: %(name)s:%(message)s')
+
+file_handler = logging.FileHandler('views.log')
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 def login_page(request):
+    if request.user.is_authenticated:
+        return redirect('polls:index')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -24,9 +41,15 @@ def login_page(request):
 
         if user is not None:
             login(request, user)
+            logger.info(
+                'Login: This {} logged in at {}'.format(request.user.username,
+                                                        request.META.get('REMOTE_ADDR')))
             return redirect('polls:index')
         else:
             messages.info(request, 'Username or Password is incorrect')
+            logger.warning('Login: Unsuccessful login attempt by {} at {}'.format(request.POST['username'],
+                                                                                  request.META.get(
+                                                                                      'REMOTE_ADDR')))
 
     context = {}
     return render(request, 'polls/login.html', context)
@@ -41,6 +64,8 @@ def register_page(request):
             form.save()
             user = form.cleaned_data.get('username')
             messages.success(request, "Account was created for " + user)
+            logger.info('Register: This {} has created user name {}'.format(request.META.get("REMOTE_ADDR"),
+                                                                            request.user.username))
 
             return redirect('polls:login')
 
@@ -49,6 +74,8 @@ def register_page(request):
 
 
 def logout_user(request):
+    logger.info(
+        'Logout: This {} has logged out at {}'.format(request.user.username, request.META.get("REMOTE_ADDR")))
     logout(request)
     return redirect('polls:login')
 
@@ -104,15 +131,24 @@ def vote(request, question_id: int):
             select_choice = question.choice_set.get(pk=request.POST['choice'])
         except (KeyError, Choice.DoesNotExist):
             # Redisplay the question voting form
+            logger.exception("{} didn't select a choice.".format(request.user.username))
             return render(request, 'polls/detail.html',
                           {'question': question, 'error_message': "You didn't select a choice.", })
         else:
-            select_choice.votes += 1
-            select_choice.save()
+            check_vote = Vote.objects.filter(question=question_id, user=request.user).exists()
+            if check_vote:
+                get_vote = Vote.objects.get(user=request.user)
+                get_vote.choice_id = select_choice.id
+                get_vote.save()
+            else:
+                get_vote = Vote.objects.create(question=question, user=request.user, choice=select_choice)
+                get_vote.save()
             # Always return an HttpResponseRedirect after successfully dealing
             # with POST data. This prevents data from being posted twice if a
             # user hits the Back button.
+            logger.info('Vote: This {} vote at question id:{}'.format(request.user.username, question.id))
             return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
     else:
         messages.error(request, "Polls not published yet or does not exist")
+        logger.error("Vote: This {} tried to access invalid question".format(request.user.username))
         return redirect('polls:index')
